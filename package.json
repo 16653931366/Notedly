@@ -20,8 +20,12 @@
   "dependencies": {
     "apollo-server-express": "^3.13.0",
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
+    "graphql-depth-limit": "^1.1.0",
     "graphql-scalars": "^1.24.2",
+    "graphql-validation-complexity": "^0.4.2",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1"
   }

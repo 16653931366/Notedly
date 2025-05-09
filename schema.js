@@ -3,6 +3,12 @@ const { gql } = require('apollo-server-express');
 module.exports = gql`
     scalar DateTime
     
+    type NoteFeed {
+        notes: [Note]!
+        cursor: String!
+        hasNextPage: Boolean!
+    }
+    
     type Note {
         id: ID!
         content: String!
@@ -27,6 +33,7 @@ module.exports = gql`
         user(username: String!): User
         users: [User!]!
         me: User!
+        noteFeed(cursor: String): NoteFeed
     }
 
     type Mutation {

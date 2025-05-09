@@ -1,8 +1,12 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
+const depthLimit = require('graphql-depth-limit');
+const { createComplexityLimitRule } = require('graphql-validation-complexity')
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const cors = require('cors');
 
 const models = require('./models');
 const typeDefs = require('./schema');
@@ -12,21 +16,23 @@ const DB_HOST = process.env.DB_HOST;
 const port = process.env.PORT || 4000;
 
 const app = express();
-mongoose.connect(DB_HOST).then( () => {
-    console.log('MongoDB Connected');
-});
-mongoose.connection.on('error', err => {
-    console.error(err);
-    console.log(
-        'MongoDB connection error. Please make sure MongoDB is running.'
-    );
-    process.exit();
-})
+app.use(helmet());
+app.use(cors());
+
+mongoose.connect(DB_HOST)
+    .then(() => {
+        console.log('MongoDB Connected');
+    })
+    .catch(err => {
+        console.error('MongoDB connection error:', err);
+        process.exit(1); // 使用非0退出码表示错误
+    });
 
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({req}) => {
+    validationRules: [depthLimit(5), createComplexityLimitRule(1000)],
+    context: async ({req}) => {
         const token = req.headers.authorization;
         let user;
         if (token) {
